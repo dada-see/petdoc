@@ -13,7 +13,7 @@ const PetPage = () => {
     const navigate = useNavigate();
     const petDummy = useContext(AnimalList);
     const { onReserveRemove } = useContext(AnimalListDispatch);
-    const [choosePet, setChoosePet] = useState(1);
+    const [choosePet, setChoosePet] = useState(null);
     const [isMyPet, setIsMyPet] = useState(true);
     const location = useLocation();
 
@@ -32,7 +32,13 @@ const PetPage = () => {
         setChoosePet(id);
     }
 
-    const filterPetDummy = choosePet === 1 ? petDummy.filter((pet) => (pet.pet_id === 1)) : petDummy.filter((pet) => (pet.pet_id === choosePet));
+    useEffect(() => {
+        if (choosePet === null || (petDummy.length > 0 && !petDummy.find(pet => pet.pet_id === choosePet))) {
+            setChoosePet(petDummy[0]?.pet_id || null);
+        }
+    }, [petDummy]);
+
+    const filterPetDummy = choosePet ? petDummy.filter((pet) => (pet.pet_id === choosePet)) : [];
 
     const handleReserDelete = (reservationId) => {
         const shouldDelete = window.confirm('예약을 취소하시겠습니까?');
@@ -47,7 +53,7 @@ const PetPage = () => {
         }
     }, [location.state])
 
-    if (isMyPet === true) {
+    if (isMyPet === true && choosePet !== null) {
         return (
             <div className="PetPage">
                 <PetPageTop>
@@ -83,7 +89,7 @@ const PetPage = () => {
                 <div>
                     {filterPetDummy.map((pet) => (
                         <PetDetail
-                            key={pet.pet_id} {...pet} choosePet={choosePet}
+                            key={pet.pet_id} {...pet} 
                         />
                     ))}
                 </div>

@@ -22,7 +22,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 70%;
     margin-left: 20px;
     margin-bottom: 20px;
     padding: 10px;
@@ -63,6 +63,9 @@
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
+}
+.Chatting .consultContent .content_wrap .more.no{
+    display: none;
 }
 .Chatting .consultContent .content_wrap .near{
     width: 100px;

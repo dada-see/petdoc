@@ -14,8 +14,13 @@ const Mypet = () => {
             <div className='MypetTitle'>
                 <h3>My Pet</h3>
                 <Button 
-                    btnText={<span className='material-icons-outlined'> add_circle</span>}
-                    btnName={'goMypage'}
+                    btnText={
+                        <>
+                            <span>더보기</span>
+                            <span className="material-symbols-outlined">chevron_right</span>
+                        </>
+                    }
+                    btnName={'goMyPage more'}
                     btnClick={()=>{navigate('/petpage')}}
                 />
             </div>

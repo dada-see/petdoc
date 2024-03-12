@@ -4,7 +4,7 @@ import PetProfile from "../component/PetProfile";
 import Button from "../component/Button";
 import "../css/EditPets.css";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AnimalListDispatch } from "../App";
 
 const Editpets = ({ isEdit, originData }) => {
@@ -92,12 +92,6 @@ const Editpets = ({ isEdit, originData }) => {
         navigate('/PetPage');
     }
 
-    const handleDelete = (id) => {
-        window.confirm('삭제하시면 복구할 수 없습니다. 정말 삭제하시겠습니까?')
-            onRemove(id);
-            navigate('/petpage');
-    }
-
     useEffect(() => {
         if (isEdit) {
             setPetKind(originData.pet_breed)
@@ -141,13 +135,13 @@ const Editpets = ({ isEdit, originData }) => {
             />
             <div className="editBtns">
                 <Button
-                    btnClick={handleSubmit}
-                    btnText={isEdit ? '수정하기' : ''}
+                    btnClick={()=>navigate('/petpage')}
+                    btnText={isEdit ? '수정취소' : ''}
                     btnName={isEdit ? 'editBtn btns' : ''}
                 />
                 <Button
-                    btnClick={() => {handleDelete(originData.pet_id)}}
-                    btnText={isEdit ? '삭제하기' : ''}
+                    btnClick={handleSubmit}
+                    btnText={isEdit ? '수정하기' : ''}
                     btnName={isEdit ? 'editBtn btns' : ''}
                 />
             </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import '../css/Chatting.css';
 import { useNavigate } from "react-router-dom";
 
-const Chatting = ({ chatHistory, cate }) => {
+const Chatting = ({ chatHistory }) => {
     const navigate = useNavigate();
     const [openText, setOpenText] = useState([]);
 
@@ -13,17 +13,18 @@ const Chatting = ({ chatHistory, cate }) => {
             return newText;
         });
     };
+
     return (
         <div className="Chatting">
             <div className="consultContent">
                 {chatHistory.map((item, index) => (
                     <div className="content_wrap" key={index}>
-                        <span 
+                        <div 
                             className={`content ${openText[index] ? 'expanded' : ''}`} >
                             {item.content}
-                        </span>
+                        </div>
                         <span 
-                            className="more" 
+                            className='more'
                             onClick={() => {toggleText(index)}} >
                             {openText[index] ? '접기' : '더보기'}
                         </span>
@@ -34,7 +35,6 @@ const Chatting = ({ chatHistory, cate }) => {
                         </span>
                     </div>
                 ))}
-                {cate}
             </div>
         </div>
     );

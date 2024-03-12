@@ -23,6 +23,7 @@ const PetDetail = ({
     const { onSymptomRemove } = useContext(AnimalListDispatch);
     const [value, onChange] = useState(new Date());
     const [isSymptom, setIsSymptom] = useState(pet_symptoms);
+    const { onRemove } = useContext(AnimalListDispatch);
 
     // 현재 날짜
     const currentDate = new Date();
@@ -56,6 +57,12 @@ const PetDetail = ({
             morning <= new Date(item.symptom_date) && new Date(item.symptom_date) <= afternoon)
         )
     };
+
+    const handleDelete = (id) => {
+        window.confirm('삭제하시면 복구할 수 없습니다. 정말 삭제하시겠습니까?')
+            onRemove(id);
+            navigate(`/petpage/`);
+    }
 
     const handleSymptomDelete = (symptomId) => {
         const shouldDelete = window.confirm('해당 날짜의 증상을 삭제하시겠습니까?');
@@ -100,7 +107,7 @@ const PetDetail = ({
                     >
                         수정하기
                     </div>
-                    <div>삭제하기</div>
+                    <div onClick={() => {handleDelete(pet_id)}}>삭제하기</div>
                 </div>
             </div>
             <div className="calendarTitle">
