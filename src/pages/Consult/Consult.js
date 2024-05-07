@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import BottomMenu from '../../component/BottomMenu/BottomMenu';
 import Chatting from './Chatting/Chatting';
 import ConsultBtns from './ConsultBtns/ConsultBtns';
 import './Consult.css';
@@ -172,11 +171,13 @@ const consultDummy = [
 ];
 
 const Consult = () => {
-    const [selectedNum, setSelectedNum] = useState('');
-    const [chatHistory, setChatHistory] = useState([]);
+    const [selectedNum, setSelectedNum] = useState(''); // 상담 카테고리 버튼 상태변수
+    const [chatHistory, setChatHistory] = useState([]); // 상담 채팅 누적 상태변수
+
     const handleNumClick = (num) => {
         setSelectedNum(num);
     }
+
     useEffect(() => {
         // selectedNum가 변경될 때마다(버튼 다른거 클릭할때마다) chatHistory를 업데이트
         setChatHistory((it) => [
@@ -188,6 +189,7 @@ const Consult = () => {
         ]);
     }, [selectedNum]);
 
+    // 각 카테고리 맞는 콘텐츠 저장
     const getContent = (selectedNum) => {
         const isSelected = consultDummy.find(
             item => item.consult_id === selectedNum
@@ -202,7 +204,6 @@ const Consult = () => {
             <h2 className='consult_title'>상담하기</h2>
             <Chatting chatHistory={chatHistory} />
             <ConsultBtns handleNumClick={handleNumClick} />
-            <BottomMenu />
         </div>
     )
 }

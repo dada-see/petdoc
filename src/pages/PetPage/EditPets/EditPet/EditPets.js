@@ -4,7 +4,7 @@ import PetProfile from "../PetProfile/PetProfile";
 import Button from "../../../../component/Button/Button";
 import "./EditPets.css";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AnimalListDispatch } from "../../../../App";
 
 const Editpets = ({ isEdit, originData }) => {
@@ -18,7 +18,7 @@ const Editpets = ({ isEdit, originData }) => {
     const [isFemale, setIsFemale] = useState(false);
     const [date, setDate] = useState(new Date());
     const [selectedImage, setSelectedImage] = useState(null);
-    const { onCreate, onEdit, onRemove } = useContext(AnimalListDispatch);
+    const { onCreate, onEdit } = useContext(AnimalListDispatch);
 
     const handlePetKind = (e) => {
         setPetKind(e.target.value);
@@ -35,16 +35,15 @@ const Editpets = ({ isEdit, originData }) => {
     const handlePetDisease = (e) => {
         setPetDisease(e.target.value);
     };
+
+    // 반려동물 이미지 업로드
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-
         if (file) {
             const reader = new FileReader();
-
             reader.onload = (e) => {
                 setSelectedImage(e.target.result);
             };
-
             reader.readAsDataURL(file);
         }
     };
@@ -59,6 +58,7 @@ const Editpets = ({ isEdit, originData }) => {
         };
     }, [petGender]);
 
+    // 등록하기 버튼
     const handleSubmit = () => {
         if (window.confirm(isEdit ? '반려동물을 수정하시겠습니까?' : '반려동물을 추가하시겠습니까?')) {
             if (!isEdit) {
@@ -101,7 +101,7 @@ const Editpets = ({ isEdit, originData }) => {
             setPetWeight(originData.pet_weight)
             setSelectedImage(originData.pet_photo)
         }
-    }, [originData]);
+    }, [originData, isEdit]);
 
     return (
         <div className="EditPets">

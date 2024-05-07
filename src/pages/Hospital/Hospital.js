@@ -1,47 +1,43 @@
 import "./Hospital.css";
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, useEffect } from "react";
 import SearchBar from "../../component/SearchBar/SearchBar";
 import HospitalCate from "./HospitalCate/HospitalCate";
 import { HospitalList } from "../../App";
 import HospitalFilterModal from "./HospitalFilterModal/HospitalFilterModal";
 import Button from "../../component/Button/Button";
 
-const Hospital = () => {
+const Hospital = ({ handleBookmarkClick, bookmarkedHos }) => {
     const hospitalList = useContext(HospitalList);
     const [searchHospital, setSearchHospital] = useState(""); //검색바 필터링
-    const [isMap, setIsMap] = useState(true);
+    const [isMap, setIsMap] = useState(false); // 지도, 리스트 토글 상태관리
+    const [selectAnimals, setSelectAnimals] = useState([]); // 병원 state
+
+    // 지도, 리스트 토글 함수
     const handleMap = () => {
         setIsMap(!isMap);
     };
 
-    const [selectedItems, setSelectedItems] = useState([]);
+    // 병원 리스트 초기화
+    useEffect(() => {
+        setSelectAnimals(hospitalList);
+    }, [hospitalList]);
 
-    const toggleSelectedItem = (id, checked) => {
-        setSelectedItems((prevItems) => {
-            if (checked) {
-                return [...prevItems, id];
-            } else {
-                return prevItems.filter((itemId) => itemId !== id);
-            }
-        });
+    // 체크된 항목 필터링
+    const checkValueHandle = (list) => {
+        if (list.length === 0) {
+            // 빈 배열일 경우 원래의 병원 리스트로 필터링
+            setSelectAnimals(hospitalList);
+        } else {
+            // 필터링된 병원 리스트 적용
+            setSelectAnimals(hospitalList.filter(hospital =>
+                list.every(item =>
+                    hospital.poss_animals.includes(item) || hospital.service.includes(item)
+                )
+            ));
+        }
     };
 
-    const [selectAnimals, setSelectAnimals] = useState(hospitalList);
-
-    const checkValueHandle = (id, checked) => {
-        toggleSelectedItem(id, checked);
-        setSelectAnimals((prevAnimals) =>
-            checked
-                ? prevAnimals.filter((hospital) => {
-                    return (
-                        hospital.poss_animals.includes(`${id}`) ||
-                        hospital.service.join().includes(`${id}`)
-                    );
-                })
-                : hospitalList
-        );
-    };
-
+    //검색창 필터링 함수
     const filterSearch = useMemo(() => {
         return searchHospital === ""
             ? selectAnimals
@@ -62,8 +58,9 @@ const Hospital = () => {
             </div>
             <HospitalCate
                 filterSearch={filterSearch}
-                searchHospital={searchHospital}
                 isMap={isMap}
+                handleBookmarkClick={handleBookmarkClick}
+                bookmarkedHos={bookmarkedHos}
             />
             <HospitalFilterModal checkValueHandle={checkValueHandle} />
             {isMap ? (

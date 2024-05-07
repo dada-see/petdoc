@@ -91,12 +91,13 @@ const petDummyList = [
 ]
 
 let newState = petDummyList;
-let newHospital = hospitalDummy;
 const reducer = (state, action) => {
     switch (action.type) {
+        //반려동물 기본값
         case 'INIT': {
             return action.data;
         }
+        //반려동물 생성
         case 'CREATE': {
             const newItem = {
                 ...action.data
@@ -104,15 +105,18 @@ const reducer = (state, action) => {
             newState = [...newState, newItem];
             break;
         }
+        //반려동물 삭제
         case 'REMOVE': {
             newState = state.filter((item) => item.pet_id !== action.targetID);
             break;
         }
+        //반려동물 수정
         case 'EDIT': {
             newState = state.map((item) =>
                 item.pet_id === action.data.pet_id ? { ...action.data } : item);
             break;
         }
+        //반려동물 예약추가
         case 'RESVERADD': {
             const { data } = action;
             newState = state.map((item) => {
@@ -127,6 +131,7 @@ const reducer = (state, action) => {
             });
             break;
         }
+        //반려동물 예약삭제
         case 'RESVERREMOVE': {
             const { reservationId } = action;
             newState = state.map((item) => {
@@ -134,7 +139,6 @@ const reducer = (state, action) => {
                     const newReservations = item.reservations.filter(
                         (reservation) => reservation.reserve_id !== reservationId
                     );
-
                     return {
                         ...item,
                         reservations: newReservations
@@ -144,6 +148,7 @@ const reducer = (state, action) => {
             });
             break;
         }
+        //반려동물 증상추가
         case "SYMPTOMADD": {
             const { data } = action;
             newState = state.map((item) => {
@@ -174,6 +179,7 @@ const reducer = (state, action) => {
             });
             break;
         }
+        //반려동물 증상삭제
         case 'SYMPTOMREMOVE': {
             const { symptom_id } = action;
             newState = state.map((item) => {
@@ -181,7 +187,6 @@ const reducer = (state, action) => {
                     const newSymptoms = item.pet_symptoms.filter(
                         (symptom) => symptom.symptom_id !== symptom_id
                     );
-
                     return {
                         ...item,
                         pet_symptoms: newSymptoms
@@ -191,35 +196,21 @@ const reducer = (state, action) => {
             });
             break;
         }
-
-        case 'CHANGEFAV': {
-            const { data } = action;
-            newHospital = state.map((hospital) => {
-                if (hospital.hos_id === data.hos_id) {
-                    return {
-                        ...hospital,
-                        bookmark: data.bookmark
-                    };
-                }
-                return hospital;
-            });
-        }
         default:
             return state;
-
     }
     return newState;
 };
-
 export const HospitalList = React.createContext();
 export const AnimalList = React.createContext();
 export const AnimalListDispatch = React.createContext();
-export const Favorite = React.createContext();
+
 
 function App() {
 
     const [loading, setLoading] = useState(true); // 로딩페이지 
 
+    //로딩시간 함수
     useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
@@ -228,13 +219,34 @@ function App() {
     }, []);
 
     const [data, dispatch] = useReducer(reducer, petDummyList); //반려동물 데이터
-    const [hosData, hosdispatch] = useReducer(reducer, hospitalDummy);
     const dataId = useRef(3);
     const reserveId = useRef(2);
     const reserve = useRef([]);
     const symptomList = useRef([]);
     const symptomId = useRef(2);
+    const [bookmarkedHos, setBookmarkedHos] = useState([]); // 북마크 배열
 
+    const handleBookmarkClick = (hospital) => {
+        // 이미 북마크된 경우 해당 병원을 북마크 배열에서 제거하고, 아닌 경우에는 추가
+        if (bookmarkedHos.some(item => item.hos_id === hospital.hos_id)) {
+            // 이미 북마크된 경우 해당 병원을 북마크 배열에서 제거
+            setBookmarkedHos(prev => prev.filter(item => item.hos_id !== hospital.hos_id));
+        } else {
+            // 아직 북마크되지 않은 경우 해당 병원을 북마크 배열에 추가
+            setBookmarkedHos(prev => [...prev, hospital]);
+        }
+    };
+    // 페이지가 로드될 때 로컬 스토리지에서 북마크 배열 불러오기
+    useEffect(() => {
+        const localBookmarks = JSON.parse(localStorage.getItem('bookmarkedHos')) || [];
+        setBookmarkedHos(localBookmarks);
+    }, []);
+    // 로컬 스토리지에 북마크 배열 저장
+    useEffect(() => {
+        localStorage.setItem('bookmarkedHos', JSON.stringify(bookmarkedHos));
+    }, [bookmarkedHos]);
+
+    //반려동물 추가
     const onCreate = (pet_name, pet_breed, pet_sex, date, pet_weight, pet_disease, pet_photo) => {
         dispatch({
             type: 'CREATE',
@@ -255,6 +267,7 @@ function App() {
 
     };
 
+    //반려동물 삭제
     const onRemove = (targetID) => {
         dispatch({
             type: 'REMOVE',
@@ -262,6 +275,7 @@ function App() {
         });
     }
 
+    //반려동물 수정
     const onEdit = (targetID, pet_name, pet_breed, pet_sex, date, pet_weight, pet_disease) => {
         dispatch({
             type: 'EDIT',
@@ -277,6 +291,7 @@ function App() {
         });
     }
 
+    //반려동물 예약추가
     const onReserveAdd = (date, reserve_time, reserve_purpose, symptom, hospital_id, hospital_name, hospital_address, hospital_number, pet_id) => {
         dispatch({
             type: 'RESVERADD',
@@ -295,6 +310,8 @@ function App() {
         })
         reserveId.current += 1;
     }
+
+    //반려동물 예약삭제
     const onReserveRemove = (reservationId) => {
         dispatch({
             type: 'RESVERREMOVE',
@@ -302,6 +319,7 @@ function App() {
         })
     }
 
+    //반려동물 증상추가
     const onSymptomAdd = (
         pet_id,
         date,
@@ -333,6 +351,7 @@ function App() {
         symptomId.current += 1;
     };
 
+    //반려동물 증상삭제
     const onSymptomRemove = (symptom_id) => {
         dispatch({
             type: 'SYMPTOMREMOVE',
@@ -340,16 +359,7 @@ function App() {
         })
     }
 
-    const changeFav = (targetID, bookmark) => {
-        hosdispatch({
-            type: 'CHANGEFAV',
-            data: {
-                hos_id: targetID,
-                bookmark
-            }
-        })
-    }
-
+    //공통 레이아웃
     const Layout = () => {
         return (
             <div className='wrap'>
@@ -360,33 +370,31 @@ function App() {
     }
 
     return (
-        <HospitalList.Provider value={hosData}>
+        <HospitalList.Provider value={hospitalDummy}>
             <AnimalList.Provider value={data}>
                 <AnimalListDispatch.Provider value={{ onCreate, onRemove, onEdit, onReserveAdd, onReserveRemove, onSymptomAdd, onSymptomRemove }}>
-                    <Favorite.Provider value={{ changeFav }}>
-                        {loading ? (<Loading />) : (
-                            <div className="App">
-                                <BrowserRouter>
-                                    <ScrollTop />
-                                    <Routes>
-                                        <Route path='/' element={<Layout />}>
-                                            <Route index element={<Home />} />
-                                            <Route path='/hospital' element={<Hospital />} />
-                                            <Route path='/Consult' element={<Consult />} />
-                                            <Route path='/bookmark' element={<BookMark />} />
-                                            <Route path='/hospitalInfo/:hos_id' element={<HospitalInfo />} />
-                                            <Route path='/petpage/' element={<PetPage />} />
-                                            <Route path='/petdetail/:pet_id' element={<PetDetail />} />
-                                        </Route>
-                                        <Route path='/search' element={<SearchPage />} />
-                                        <Route path='/reservation/:hos_id' element={<Reservation />} />
-                                        <Route path='/addpets' element={<AddPetPage />} />
-                                        <Route path='/editpets/:pet_id' element={<EditPetPage />} />
-                                    </Routes>
-                                </BrowserRouter>
-                            </div>
-                        )}
-                    </Favorite.Provider>
+                    {loading ? (<Loading />) : (
+                        <div className="App">
+                            <BrowserRouter>
+                                <ScrollTop />
+                                <Routes>
+                                    <Route path='/' element={<Layout />}>
+                                        <Route index element={<Home />} />
+                                        <Route path='/hospital' element={<Hospital handleBookmarkClick={handleBookmarkClick} bookmarkedHos={bookmarkedHos} />} />
+                                        <Route path='/Consult' element={<Consult />} />
+                                        <Route path='/bookmark' element={<BookMark handleBookmarkClick={handleBookmarkClick} bookmarkedHos={bookmarkedHos} />} />
+                                        <Route path='/hospitalInfo/:hos_id' element={<HospitalInfo />} />
+                                        <Route path='/petpage/' element={<PetPage />} />
+                                        <Route path='/petdetail/:pet_id' element={<PetDetail />} />
+                                    </Route>
+                                    <Route path='/search' element={<SearchPage />} />
+                                    <Route path='/reservation/:hos_id' element={<Reservation />} />
+                                    <Route path='/addpets' element={<AddPetPage />} />
+                                    <Route path='/editpets/:pet_id' element={<EditPetPage />} />
+                                </Routes>
+                            </BrowserRouter>
+                        </div>
+                    )}
                 </AnimalListDispatch.Provider>
             </AnimalList.Provider>
         </HospitalList.Provider>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import Calendar from "react-calendar";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -41,13 +41,7 @@ const PetDetail = ({
         return { years, months };
     };
 
-    useEffect(() => {
-        if (pet_symptoms) {
-            handleCalendar(value);
-        }
-    }, [value, pet_symptoms]);
-
-    const handleCalendar = (value) => {
+    const handleCalendar = useCallback((value) => {
         const morning = new Date(value);
         morning.setHours(0, 0, 0, 0);
         const afternoon = new Date(value);
@@ -56,7 +50,13 @@ const PetDetail = ({
             pet_symptoms && pet_symptoms.filter((item) =>
                 morning <= new Date(item.symptom_date) && new Date(item.symptom_date) <= afternoon)
         )
-    };
+    }, [pet_symptoms]);
+
+    useEffect(() => {
+        if (pet_symptoms) {
+            handleCalendar(value);
+        }
+    }, [value, pet_symptoms, handleCalendar]);
 
     const handleDelete = (id) => {
         window.confirm('삭제하시면 복구할 수 없습니다. 정말 삭제하시겠습니까?')

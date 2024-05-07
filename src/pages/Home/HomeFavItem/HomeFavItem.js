@@ -1,10 +1,8 @@
 import "./HomeFavItem.css";
 import { useNavigate } from "react-router-dom";
-import BookMarkStar from "../../BookMark/BookMarkStar/BookMarkStar";
 
-const HomeFavItem = ({ hos_id, hos_name, open_hours, bookmark, call }) => {
+const HomeFavItem = ({ hos_id, hos_name, open_hours, call }) => {
     const navigate = useNavigate();
-
     const handleCall = (phoneNumber) => {
         window.location.href = `tel:${phoneNumber}`;
     }; // 전화하기 기능 
@@ -13,7 +11,6 @@ const HomeFavItem = ({ hos_id, hos_name, open_hours, bookmark, call }) => {
         <div className="HomeFavItem">
             <div className="favName">
                 <h3>{hos_name}</h3>
-                <BookMarkStar id={hos_id} book={bookmark} />
             </div>
             <div className="favHour">
                 <div className="officeHour">
