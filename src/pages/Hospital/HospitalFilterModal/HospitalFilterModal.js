@@ -41,9 +41,7 @@ const HospitalFilterModal = ({ checkValueHandle }) => {
         if (isChecked) {
             setCheckedList((prev) => [...prev, value]);
             return;
-        }
-
-        if (!isChecked && checkedList.includes(value)) {
+        } else if (!isChecked && checkedList.includes(value)) {
             setCheckedList(checkedList.filter((item) => item !== value))
             return;
         }
